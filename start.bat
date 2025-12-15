@@ -19,6 +19,9 @@ if exist "%~dp0python\python.exe" (
     set "PYTHON_EXE=python"
 )
 
+REM 设置国内镜像源（清华源）
+set "PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple"
+
 REM ========================================================
 REM 脚本逻辑
 REM ========================================================
@@ -55,8 +58,8 @@ call "%~dp0%VENV_NAME%\Scripts\activate.bat"
 REM 检查并安装依赖
 if exist "%~dp0requirements.txt" (
     echo [INFO] 正在检查并更新依赖...
-    pip install --upgrade pip
-    pip install -r "%~dp0requirements.txt"
+    pip install --upgrade pip -i %PIP_INDEX_URL%
+    pip install -r "%~dp0requirements.txt" -i %PIP_INDEX_URL%
     if %errorlevel% neq 0 (
         echo [ERROR] 依赖安装失败！
         pause

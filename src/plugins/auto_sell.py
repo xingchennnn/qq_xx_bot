@@ -15,7 +15,7 @@ TARGET_QQ = "3889001741"
 auto_sell_states = {}
 
 # 1. 触发自动售卖
-auto_sell = on_command("自动售卖", priority=5)
+auto_sell = on_command("自动售卖", rule=to_me(), priority=5)
 
 @auto_sell.handle()
 async def handle_auto_sell(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):

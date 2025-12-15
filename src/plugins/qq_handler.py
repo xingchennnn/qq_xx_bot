@@ -4,7 +4,7 @@ from nonebot.adapters.onebot.v11 import Bot, Event, Message, MessageSegment
 
 # 注册 -hello 命令
 # 因为 .env 中配置了 COMMAND_START=["-"]，所以这里命令名写 "hello" 即可匹配 "-hello"
-hello = on_command("hello", priority=5)
+hello = on_command("hello", rule=to_me(), priority=5)
 
 @hello.handle()
 async def handle_hello(bot: Bot, event: Event):
@@ -25,7 +25,7 @@ async def handle_stop(bot: Bot, event: Event):
     await stop.finish("机器人已关闭")
 
 
-help = on_command("help", priority=5)
+help = on_command("help", rule=to_me(), priority=5)
 @help.handle()
 async def handle_help(bot: Bot, event: Event):
     help_text = (

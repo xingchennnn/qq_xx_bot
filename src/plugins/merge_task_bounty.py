@@ -1,4 +1,5 @@
 from nonebot import on_command, on_message
+from nonebot.rule import to_me
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment
 import asyncio
 import re
@@ -38,12 +39,15 @@ async def wait_and_settle_bounty(bot: Bot, group_id: int, minutes: int):
         merge_task_states[group_id]["bounty_state"] = "WAIT_SETTLEMENT"
 
 # 1. 触发自动任务
-auto_merge_task = on_command("自动任务", priority=5)
+auto_merge_task = on_command("自动任务", rule=to_me(), priority=5)
 
 @auto_merge_task.handle()
 async def handle_auto_merge_task(bot: Bot, event: GroupMessageEvent):
     group_id = event.group_id
     
+    if group_id in merge_task_states:
+        await auto_merge_task.finish("自动任务已在进行中，请勿重复开启")
+
     # 初始化状态，从宗门任务开始
     merge_task_states[group_id] = {
         "phase": "SECT",

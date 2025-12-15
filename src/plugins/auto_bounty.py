@@ -1,4 +1,5 @@
 from nonebot import on_command, on_message
+from nonebot.rule import to_me
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment
 import re
 import asyncio
@@ -25,12 +26,15 @@ async def wait_and_settle(bot: Bot, group_id: int, minutes: int):
         auto_bounty_states[group_id]["state"] = "WAIT_SETTLEMENT"
 
 # 1. 触发自动悬赏
-auto_bounty = on_command("自动悬赏", priority=5)
+auto_bounty = on_command("自动悬赏", rule=to_me(), priority=5)
 
 @auto_bounty.handle()
 async def handle_auto_bounty(bot: Bot, event: GroupMessageEvent):
     group_id = event.group_id
     
+    if group_id in auto_bounty_states:
+        await auto_bounty.finish("自动悬赏已在进行中，请勿重复开启")
+
     # 初始化状态
     auto_bounty_states[group_id] = {
         "state": "WAIT_LIST"

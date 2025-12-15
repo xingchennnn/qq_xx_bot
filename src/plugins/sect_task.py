@@ -1,4 +1,5 @@
 from nonebot import on_command, on_message
+from nonebot.rule import to_me
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment
 import asyncio
 
@@ -18,12 +19,15 @@ async def wait_and_resume_sect(bot: Bot, group_id: int):
     await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 宗门任务接取")
 
 # 1. 触发自动宗门任务
-auto_sect = on_command("自动宗门任务", priority=5)
+auto_sect = on_command("自动宗门任务", rule=to_me(), priority=5)
 
 @auto_sect.handle()
 async def handle_auto_sect(bot: Bot, event: GroupMessageEvent):
     group_id = event.group_id
     
+    if group_id in sect_task_states:
+        await auto_sect.finish("自动宗门任务已在进行中，请勿重复开启")
+
     # 初始化状态
     sect_task_states[group_id] = {
         "state": "RUNNING"
