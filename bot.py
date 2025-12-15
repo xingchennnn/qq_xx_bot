@@ -22,7 +22,8 @@ def run_bot():
             "src.plugins.auto_sell",
             "src.plugins.merge_task_bounty",
             "src.plugins.qq_handler",
-            "src.plugins.sect_task"
+            "src.plugins.sect_task",
+            "src.plugins.system"
         ]
         for plugin in plugins:
             try:

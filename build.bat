@@ -20,6 +20,7 @@ pyinstaller --onefile --noconsole --name qqBot ^
     --hidden-import src.plugins.merge_task_bounty ^
     --hidden-import src.plugins.qq_handler ^
     --hidden-import src.plugins.sect_task ^
+    --hidden-import src.plugins.system ^
     --hidden-import nonebot.drivers.fastapi ^
     --hidden-import uvicorn ^
     gui.py

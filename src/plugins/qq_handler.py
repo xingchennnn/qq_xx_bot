@@ -9,9 +9,9 @@ hello = on_command("hello", rule=to_me(), priority=5)
 @hello.handle()
 async def handle_hello(bot: Bot, event: Event):
 
-    print("收到 -hello 命令" , event)
+    # print("收到 -hello 命令" , event)
     # @ 发送者
-    user_id = event.get_user_id()
+    # user_id = event.get_user_id()
     msg = MessageSegment.at(3889001741) + " 我的存档"
     
     # 发送回复
@@ -25,20 +25,20 @@ async def handle_stop(bot: Bot, event: Event):
     await stop.finish("机器人已关闭")
 
 
-help = on_command("help", rule=to_me(), priority=5)
-@help.handle()
-async def handle_help(bot: Bot, event: Event):
-    help_text = (
-        "-hello : 向小小请求存档\n"
-        # "-stop : 关闭机器人\n"
-        "-help : 显示帮助信息\n"
-        "-每日流程: 自动完成每日修仙签到、宗门丹药领取\n"
-        "-自动宗门任务 : 自动完成宗门任务\n"
-        "-自动悬赏 : 自动悬赏任务\n"
-        "-自动售卖 : 自动售卖药材\n"
+# help = on_command("help", rule=to_me(), priority=5)
+# @help.handle()
+# async def handle_help(bot: Bot, event: Event):
+#     help_text = (
+#         "-hello : 向小小请求存档\n"
+#         # "-stop : 关闭机器人\n"
+#         "-help : 显示帮助信息\n"
+#         "-每日流程: 自动完成每日修仙签到、宗门丹药领取\n"
+#         "-自动宗门任务 : 自动完成宗门任务\n"
+#         "-自动悬赏 : 自动悬赏任务\n"
+#         "-自动售卖 : 自动售卖药材\n"
 
-    )
-    await help.finish(help_text)
+#     )
+#     await help.finish(help_text)
 
 
 # 注册机器人被 @ 的响应
