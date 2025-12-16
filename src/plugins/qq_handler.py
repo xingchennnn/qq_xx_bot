@@ -44,21 +44,24 @@ async def handle_stop(bot: Bot, event: Event):
 # 注册机器人被 @ 的响应
 # rule=to_me() 表示只有消息是发给机器人的（被 @ 或私聊）才会触发
 # priority=99 优先级设低一点，避免拦截了正常的命令
-on_call = on_message("敕令", rule=to_me(), priority=99)
+on_call = on_message(rule=to_me(), priority=99)
 
 @on_call.handle()
 async def handle_on_call(bot: Bot, event: Event):
     # 获取用户发送的消息内容（纯文本）
     user_msg = event.get_plaintext().strip()
-    user_msg = user_msg.replace("敕令", "", 1).strip()  # 去掉开头的“敕令”二字
-    # 目标机器人 QQ 号（小小）
-    target_qq = "3889001741"
     
-    # 构造转发消息：@小小 + 用户发送的内容
-    # 注意：这里去掉了用户消息中可能自带的 @机器人 部分，只保留指令内容
-    msg = MessageSegment.at(target_qq) + " " + user_msg
-    
-    await on_call.finish(msg)
+    # 检查是否以 - 开头
+    if user_msg.startswith("敕令"):
+        user_msg = user_msg[len("敕令"):].strip()  # 去掉开头的“敕令”二字
+        # 目标机器人 QQ 号（小小）
+        target_qq = "3889001741"
+        
+        # 构造转发消息：@小小 + 用户发送的内容
+        # 注意：这里去掉了用户消息中可能自带的 @机器人 部分，只保留指令内容
+        msg = MessageSegment.at(target_qq) + " " + user_msg
+        
+        await on_call.finish(msg)
 
 
 
