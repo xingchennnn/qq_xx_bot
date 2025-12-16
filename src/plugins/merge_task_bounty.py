@@ -48,6 +48,8 @@ async def handle_auto_merge_task(bot: Bot, event: GroupMessageEvent):
     if group_id in merge_task_states:
         await auto_merge_task.finish("自动任务已在进行中，请勿重复开启")
 
+
+
     # 初始化状态，从宗门任务开始
     merge_task_states[group_id] = {
         "phase": "SECT",
@@ -55,9 +57,15 @@ async def handle_auto_merge_task(bot: Bot, event: GroupMessageEvent):
         "bounty_state": "IDLE",
         "stop_after": False
     }
+
     
-    await auto_merge_task.send("开始自动任务：先执行宗门任务，完成后执行悬赏令。")
-    await asyncio.sleep(1)
+    await auto_merge_task.send("开始自动任务:  修仙签到->领丹药->宗门任务->悬赏令。")
+
+    # 先执行签到和丹药领取
+    await auto_merge_task.send(MessageSegment.at(TARGET_QQ) + " 修仙签到")
+    await asyncio.sleep(2)
+    await auto_merge_task.send(MessageSegment.at(TARGET_QQ) + " 宗门丹药领取")
+    await asyncio.sleep(2)
     # 发送指令开始接取宗门任务
     await auto_merge_task.send(MessageSegment.at(TARGET_QQ) + " 宗门任务接取")
 
