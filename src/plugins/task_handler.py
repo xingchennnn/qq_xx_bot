@@ -78,6 +78,7 @@ async def start_sect_task(bot: Bot, group_id: int, task_type=TaskType.SECT_ONLY)
         try:
             task_type = TaskType(task_type)
         except ValueError:
+            print("任务类型错误，使用默认 SECT_ONLY")
             pass
 
     task_states[group_id] = {
@@ -98,7 +99,7 @@ async def start_sect_task(bot: Bot, group_id: int, task_type=TaskType.SECT_ONLY)
     await asyncio.sleep(3)
     
     # 根据探测到的状态决定是否出关
-    await seclusion_out(bot, group_id)
+    # await seclusion_out(bot, group_id)
             
     await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 宗门任务接取")
 
@@ -153,27 +154,40 @@ async def handle_task_reply(bot: Bot, event: GroupMessageEvent): # 处理任务�
                 state_data["sect_state"] = SectState.RUNNING
             return
 
-        if "当前任务" in msg_text or "任务查看" in msg_text:
-            if "除魔令" in msg_text or "狩猎邪修" in msg_text or "宗门密令" in msg_text:
-                await asyncio.sleep(2)
-                await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 宗门任务完成")
-            else:
-                state_data["sect_state"] = SectState.REFRESH_WAITING
-                await asyncio.sleep(2)
-                await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 宗门任务刷新")
-                await bot.send_group_msg(group_id=group_id, message="检测到非邪修任务，5分钟后重新接取...")
+        if "时间还没到" in msg_text and "歇会歇会" in msg_text:
+            match = re.search(r"还有 (\d+) 秒", msg_text)
+            if match:
+                seconds = int(match.group(1))
+                wait_time = seconds + 2 # Add small buffer
                 
-                async def retry_sect_task():
-                    await asyncio.sleep(305)
+                state_data["sect_state"] = SectState.REFRESH_WAITING
+                await bot.send_group_msg(group_id=group_id, message=f"宗门任务刷新冷却中，等待 {wait_time} 秒...")
+                
+                async def retry_sect_refresh():
+                    await asyncio.sleep(wait_time)
                     if group_id in task_states:
                         task_states[group_id]["sect_state"] = SectState.RUNNING
-                        await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 宗门任务接取")
+                        await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 宗门任务刷新")
                 
-                asyncio.create_task(retry_sect_task())
+                asyncio.create_task(retry_sect_refresh())
+            return
+
+        if "道友当前没有接取宗门任务" in msg_text:
+            await asyncio.sleep(3)
+            await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 宗门任务接取")
+            return
+
+        if "当前任务" in msg_text or "任务查看" in msg_text:
+            if "除魔令" in msg_text or "狩猎邪修" in msg_text or "宗门密令" in msg_text:
+                await asyncio.sleep(5)
+                await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 宗门任务完成")
+            else:
+                await asyncio.sleep(5)
+                await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 宗门任务刷新")
             return
 
         if "恭喜道友完成宗门任务" in msg_text: # 宗门任务完成
-            await asyncio.sleep(2)
+            await asyncio.sleep(5)
             await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 宗门任务接取")
             return
 
@@ -254,6 +268,11 @@ async def handle_task_reply(bot: Bot, event: GroupMessageEvent): # 处理任务�
         if "闭关结算" in msg_text:
             state_data["seclusion_state"] = seclusionState.IDLE
             return
+        
+        else:
+            await bot.send_group_msg(group_id=group_id, message="宗门任务状态异常，任务终止")
+            del task_states[group_id]
+            return
 
     # ==================== 阶段二：悬赏令 ====================
     elif current_phase == TaskPhase.BOUNTY:
@@ -308,6 +327,21 @@ async def handle_task_reply(bot: Bot, event: GroupMessageEvent): # 处理任务�
                     del task_states[group_id]
                     await bot.send_group_msg(group_id=group_id, message="未识别到有效的悬赏令信息")
 
+            if "道友在宗门闭关室中" in msg_text:
+                state_data["seclusion_state"] = seclusionState.SECT_RUNNING
+                await asyncio.sleep(2)
+                await seclusion_out(bot, group_id)
+                await asyncio.sleep(2)
+                await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 悬赏令刷新")
+                return
+            if "已经在闭关中" in msg_text or "道友现在在闭关呢" in msg_text:
+                state_data["seclusion_state"] = seclusionState.RUNNING
+                await asyncio.sleep(2)
+                await seclusion_out(bot, group_id)
+                await asyncio.sleep(2)
+                await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 悬赏令刷新")
+                return
+
         elif bounty_state == BountyState.WAIT_CONFIRM:
             if "悬赏令接取成功" in msg_text:
                 time_match = re.search(r"预计时间：(\d+)分钟", msg_text)
@@ -336,3 +370,7 @@ async def handle_task_reply(bot: Bot, event: GroupMessageEvent): # 处理任务�
                  await asyncio.sleep(2)
                  await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 悬赏令刷新")
                  state_data["bounty_state"] = BountyState.WAIT_LIST
+        else :
+            await bot.send_group_msg(group_id=group_id, message="悬赏令状态异常，任务终止")
+            del task_states[group_id]
+            return

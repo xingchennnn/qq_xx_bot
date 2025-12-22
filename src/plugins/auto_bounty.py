@@ -15,4 +15,4 @@ async def handle_auto_bounty(bot: Bot, event: GroupMessageEvent):
 
     await auto_bounty.send("开始自动悬赏任务...")
     # 启动悬赏任务，类型为 BOUNTY_ONLY
-    await start_bounty_task(bot, group_id, task_type="BOUNTY_ONLY")
+    await start_bounty_task(bot, group_id)

@@ -1,7 +1,7 @@
 ﻿from nonebot import on_command
 from nonebot.rule import to_me
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
-from .task_handler import start_sect_task, task_states
+from .task_handler import TaskType, start_sect_task, task_states
 
 # 1. 触发自动宗门任务
 auto_sect = on_command("自动宗门任务", rule=to_me(), priority=5)
@@ -15,4 +15,4 @@ async def handle_auto_sect(bot: Bot, event: GroupMessageEvent):
 
     await auto_sect.send("开始自动宗门任务...")
     # 启动宗门任务，类型为 SECT_ONLY
-    await start_sect_task(bot, group_id, task_type="SECT_ONLY")
+    await start_sect_task(bot, group_id, task_type=TaskType.SECT_ONLY)
