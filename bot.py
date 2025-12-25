@@ -38,7 +38,9 @@ def run_bot():
             "src.plugins.merge_task_bounty",
             "src.plugins.qq_handler",
             "src.plugins.sect_task",
-            "src.plugins.system"
+            "src.plugins.system",
+            "src.plugins.linglu",
+            "src.plugins.common",
         ]
         for plugin in plugins:
             try:

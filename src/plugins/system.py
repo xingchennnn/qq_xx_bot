@@ -5,7 +5,7 @@ import subprocess
 import sys
 import os
 
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 
 help_cmd = on_command("help", aliases={"帮助", "菜单"}, rule=to_me(), priority=1)
 update_cmd = on_command("update", aliases={"更新", "升级"}, rule=to_me(), priority=1)
@@ -20,7 +20,8 @@ async def handle_help(bot: Bot, event: GroupMessageEvent):
         "3. 自动悬赏 - 单独执行悬赏令\n"
         "4. 自动售卖 [价格偏移] - 自动上架药材\n"
         "5. 每日流程 - 签到、领丹药等\n"
-        # "6. 更新 - 检查并更新机器人 --未完成\n"
+        "6. 灵露收集 - 自动收集灵露直到收益归零\n"
+        # "7. 更新 - 检查并更新机器人\n"
         "\n"
         "注意：所有指令需 @机器人 使用"
     )
