@@ -35,16 +35,6 @@ def get_best_bounty(msg_text: str):
                 best_bounty_index = idx
     return best_bounty_index
 
-async def wait_and_resume_sect(bot: Bot, group_id: int, check_func=None):
-    """宗门任务闭关等待"""
-    await asyncio.sleep(5 * 60)
-    # 如果提供了检查函数，则先检查是否需要继续
-    if check_func and not check_func(group_id):
-        return
-        
-    await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 宗门出关")
-    await asyncio.sleep(2)
-    await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 宗门任务接取")
 
 async def wait_and_settle_bounty(bot: Bot, group_id: int, minutes: int, check_func=None):
     """悬赏令等待结算"""

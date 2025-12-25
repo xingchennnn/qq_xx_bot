@@ -2,8 +2,23 @@ import nonebot
 from nonebot.adapters.onebot.v11 import Adapter as ONEBOT_V11Adapter
 import sys
 import os
+from dotenv import load_dotenv
 
 def run_bot():
+    # 检测是否打包环境
+    if getattr(sys, 'frozen', False):
+        # 获取临时解压目录
+        bundle_dir = sys._MEIPASS
+        bundled_env = os.path.join(bundle_dir, ".env")
+        
+        # 1. 加载打包在内的 .env (作为默认值)
+        if os.path.exists(bundled_env):
+            load_dotenv(bundled_env)
+            
+        # 2. 加载当前目录下的 .env (覆盖打包的配置)
+        if os.path.exists(".env"):
+            load_dotenv(".env", override=True)
+
     # 初始化 NoneBot
     nonebot.init()
 

@@ -14,6 +14,7 @@ pip install pyinstaller -i https://pypi.tuna.tsinghua.edu.cn/simple
 echo 正在打包...
 pyinstaller --onefile --noconsole --name qqBot ^
     --add-data "src;src" ^
+    --add-data ".env;." ^
     --hidden-import src.plugins.auto_bounty ^
     --hidden-import src.plugins.auto_matic ^
     --hidden-import src.plugins.auto_sell ^
@@ -27,5 +28,5 @@ pyinstaller --onefile --noconsole --name qqBot ^
 
 echo 打包完成！
 echo 可执行文件位于 dist\qqBot.exe
-echo 请确保将 .env 文件复制到 dist 目录下与 exe 同级。
+echo .env 文件已集成到 exe 中，如需修改配置，可在 exe 同级目录下创建 .env 文件覆盖默认配置。
 pause
