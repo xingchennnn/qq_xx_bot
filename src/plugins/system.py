@@ -4,6 +4,7 @@ from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment
 import subprocess
 import sys
 import os
+import httpx
 
 VERSION = "1.0.2"
 
@@ -73,7 +74,55 @@ async def handle_update(bot: Bot, event: GroupMessageEvent):
     try:
         # 检查是否是打包环境
         if getattr(sys, 'frozen', False):
-            await update_cmd.finish("当前为打包版本，无法自动更新。请重新下载最新版 exe 文件。")
+            await update_cmd.send("正在检查 Gitee 最新版本...")
+            try:
+                async with httpx.AsyncClient() as client:
+                    # 获取最新版本信息
+                    resp = await client.get("https://gitee.com/api/v5/repos/kuirao/qq_xx_bot/releases/latest")
+                    resp.raise_for_status()
+                    data = resp.json()
+                    latest_tag = data["tag_name"]
+                    latest_version = latest_tag.replace("qq_xx_bot_", "")
+                    
+                    if latest_version == VERSION:
+                        await update_cmd.finish("当前已是最新版本。")
+                        return
+                        
+                    await update_cmd.send(f"发现新版本: {latest_version}，正在下载...")
+                    
+                    # 下载新版本
+                    download_url = f"https://gitee.com/kuirao/qq_xx_bot/releases/download/{latest_tag}/qqBot.exe"
+                    resp = await client.get(download_url, follow_redirects=True)
+                    resp.raise_for_status()
+                    
+                    # 保存新文件
+                    new_exe = "qqBot_new.exe"
+                    with open(new_exe, "wb") as f:
+                        f.write(resp.content)
+                        
+                    # 创建更新脚本
+                    current_exe = sys.executable
+                    exe_name = os.path.basename(current_exe)
+                    
+                    bat_script = f"""
+                        @echo off
+                        timeout /t 3 /nobreak
+                        del "{exe_name}"
+                        ren "{new_exe}" "{exe_name}"
+                        start "" "{exe_name}"
+                        del update.bat
+                        """
+                    with open("update.bat", "w", encoding="gbk") as f:
+                        f.write(bat_script)
+                        
+                    await update_cmd.send("下载完成，正在重启进行更新...")
+                    
+                    # 启动脚本并退出
+                    subprocess.Popen("update.bat", shell=True)
+                    sys.exit(0)
+                    
+            except Exception as e:
+                await update_cmd.finish(f"自动更新失败：{e}\n请尝试手动下载：https://gitee.com/kuirao/qq_xx_bot/releases")
             return
 
         # 执行 git pull
