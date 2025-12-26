@@ -303,6 +303,7 @@ async def handle_task_reply(bot: Bot, event: GroupMessageEvent): # 处理任务�
                 # await bot.send_group_msg(group_id=group_id, message="宗门任务状态异常，任务终止 \n 错误语句：\n" + msg_text )
                 # del task_states[group_id]
 
+                print("接收到其他语句 \n 语句：\n" + msg_text )
                 return
 
         # ==================== 阶段二：悬赏令 ====================
@@ -401,6 +402,7 @@ async def handle_task_reply(bot: Bot, event: GroupMessageEvent): # 处理任务�
                     await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 悬赏令刷新")
                     state_data["bounty_state"] = BountyState.WAIT_LIST
             else :
-                await bot.send_group_msg(group_id=group_id, message="悬赏令指令异常 \n 错误语句：\n" + msg_text )
+                # await bot.send_group_msg(group_id=group_id, message="悬赏令指令异常 \n 错误语句：\n" + msg_text )
+                print("接收到其他语句 \n 错误语句：\n" + msg_text )
                 # del task_states[group_id]
                 return

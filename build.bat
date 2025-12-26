@@ -8,8 +8,14 @@ call .venv\Scripts\activate
 REM 设置国内镜像源（清华源）
 set "PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple"
 
-echo 正在安装 PyInstaller...
-pip install pyinstaller -i https://pypi.tuna.tsinghua.edu.cn/simple
+echo 正在检查 PyInstaller...
+pip show pyinstaller >nul 2>&1
+if %errorlevel% neq 0 (
+    echo 未检测到 PyInstaller，正在安装...
+    pip install pyinstaller -i https://pypi.tuna.tsinghua.edu.cn/simple
+) else (
+    echo PyInstaller 已安装，跳过安装。
+)
 
 echo 正在打包...
 pyinstaller --onefile --noconsole --name qqBot ^
