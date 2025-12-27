@@ -112,6 +112,10 @@ async def start_sect_task(bot: Bot, group_id: int, task_type=TaskType.SECT_ONLY)
     # 不过，为了确保任务能接取，我们需要确保是空闲状态
     # 所以这里我们等待几秒，让探测消息有时间返回并处理
     await asyncio.sleep(3)
+    #如果没有闭关，闭关
+    if task_states[group_id]["seclusion_state"] == seclusionState.IDLE:
+        await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 闭关")
+        await asyncio.sleep(2)
     
     # 根据探测到的状态决定是否出关
     # await seclusion_out(bot, group_id)
@@ -232,14 +236,16 @@ async def handle_task_reply(bot: Bot, event: GroupMessageEvent): # 处理任务�
                 await asyncio.sleep(2)
                 
                 # 状态重置：任务失败意味着我们不在闭关状态，或者需要重新开始
-                state_data["seclusion_state"] = seclusionState.IDLE
-                state_data.pop("seclusion_start_time", None)
+                # state_data["seclusion_state"] = seclusionState.IDLE
+                # state_data.pop("seclusion_start_time", None)
 
                 # 直接闭关开始恢复
+                await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 出关")
+
+                await asyncio.sleep(2)
+
                 await bot.send_group_msg(group_id=group_id, message=MessageSegment.at(TARGET_QQ) + " 闭关")
                 
-                await bot.send_group_msg(group_id=group_id, message="状态欠佳，闭关恢复中(需等待至少60秒)...")
-
                 async def recover_and_retry():
                     # 等待一下，确保闭关消息已处理且start_time已记录
                     await asyncio.sleep(5) 
