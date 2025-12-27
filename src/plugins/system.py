@@ -7,7 +7,7 @@ import sys
 import os
 import httpx
 
-VERSION = "1.0.5"
+VERSION = "1.0.6"
 
 help_cmd = on_command("help", aliases={"帮助", "菜单"}, rule=to_me(), priority=1)
 update_cmd = on_command("update", aliases={"更新", "升级"}, rule=to_me(), priority=1)
