@@ -33,6 +33,7 @@ def run_bot():
         # 必须与 build.bat 中的 --hidden-import 对应
         plugins = [
             "src.plugins.auto_bounty",
+            "src.plugins.auto_mining",
             "src.plugins.auto_matic",
             "src.plugins.auto_sell",
             "src.plugins.merge_task_bounty",

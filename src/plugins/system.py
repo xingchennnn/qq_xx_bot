@@ -7,7 +7,7 @@ import sys
 import os
 import httpx
 
-VERSION = "1.0.8"
+VERSION = "1.0.9"
 
 help_cmd = on_command("help", aliases={"帮助", "菜单"}, rule=to_me(), priority=1)
 update_cmd = on_command("update",
@@ -26,7 +26,9 @@ async def handle_help(bot: Bot, event: GroupMessageEvent):
            "4. 自动售卖 [价格偏移] - 自动上架药材\n"
            "5. 每日流程 - 签到、领丹药等\n"
            "6. 灵露收集 - 自动收集灵露直到收益归零\n"
-           "7. 更新 - 检查并更新机器人\n"
+           "7. 自动挖灵石 - 自动循环灵界挖灵石\n"
+           "8. 停止自动挖灵石 - 停止自动循环挖矿\n"
+           "9. 更新 - 检查并更新机器人\n"
            "\n"
            "注意：所有指令需 @机器人 使用")
     await help_cmd.send(msg)
